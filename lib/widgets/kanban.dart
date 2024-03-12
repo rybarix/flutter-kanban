@@ -18,7 +18,7 @@ class Kanban extends StatelessWidget {
   // }
 
   void _onNew() {
-    Provider.of<KanbanModel>(context, listen: false).add(KanbanCard());
+    // Provider.of<KanbanModel>(context, listen: false).add(KanbanCard());
   }
 
   @override
