@@ -1,25 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_kanban/kanban_card.dart';
+import 'package:flutter_kanban/models/kanban_model.dart';
+import 'package:provider/provider.dart';
 
-class KanbanItem extends StatelessWidget {
-  final String text;
-  final String title;
+enum CardMenu { delete, edit }
+
+class KanbanItem extends StatefulWidget {
+  final KanbanCard card;
   final bool editable;
   // final void Function(String)? onChange;
 
   const KanbanItem(
       {super.key,
-      required this.text,
-      required this.title,
-      // required this.onChange,
+      required this.card,
       this.editable = false});
+
+  @override
+  State<KanbanItem> createState() => _KanbanItemState();
+}
+
+class _KanbanItemState extends State<KanbanItem> {
+  TextEditingController tecTitle = TextEditingController(text: '');
+  TextEditingController tecBody = TextEditingController(text: '');
+  late KanbanCard _card;
+  late int id;
+  bool editable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _card = widget.card;
+
+    // Set initial values
+    tecTitle.text = _card.title;
+    tecBody.text = _card.body;
+
+    tecTitle.addListener(() {
+      final String text = tecTitle.text;
+      _card.title = text;
+    });
+
+    tecBody.addListener(() {
+      final String text = tecBody.text;
+      _card.body = text;
+    });
+  }
+
+  void _startEditable() {
+    setState(() {
+      editable = true;
+    });
+  }
+
+  void _endEditable() {
+    setState(() {
+      editable = false;
+    });
+
+    // Update model with edited model.
+    Provider.of<KanbanModel>(context, listen: false).edit(_card);
+  }
 
   @override
   Widget build(BuildContext context) {
     Widget isEditable() {
       return Column(
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
-          Text(text),
+          TextField(controller: tecTitle),
+          TextField(controller: tecBody),
         ],
       );
     }
@@ -27,9 +75,8 @@ class KanbanItem extends StatelessWidget {
     Widget notEditable() {
       return Column(
         children: [
-          // TextField(),
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
-          Text(text),
+          Text(_card.title, style: Theme.of(context).textTheme.titleMedium),
+          Text(_card.body),
         ],
       );
     }
@@ -42,13 +89,40 @@ class KanbanItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(6.0),
         ),
         child: Padding(
-          padding: EdgeInsets.all(10.0),
+          padding: EdgeInsets.fromLTRB(10.0, 4.0, 10.0, 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // TextField(
-                // onChanged: onChange,
-              // ),
+              Row(
+                children: [
+                  Spacer(),
+                  IconButton(
+                    icon: Icon(editable ? Icons.done :  Icons.edit),
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    // hoverColor: Colors.transparent,
+                    padding: EdgeInsets.all(0.0),
+                    visualDensity: VisualDensity.compact,
+                    iconSize: 14,
+                    onPressed: () {
+                      editable ? _endEditable() : _startEditable();
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    // hoverColor: Colors.transparent,
+                    padding: EdgeInsets.all(0.0),
+                    visualDensity: VisualDensity.compact,
+                    iconSize: 14,
+                    onPressed: () {
+                      Provider.of<KanbanModel>(context, listen:false).remove(_card);
+                    },
+                  ),
+                ],
+              ),
+              Text("state:" + editable.toString()),
               editable ? isEditable() : notEditable(),
             ],
           ),

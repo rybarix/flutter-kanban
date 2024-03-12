@@ -1,9 +1,18 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_kanban/models/kanban_model.dart';
 import 'package:flutter_kanban/widgets/kanban.dart';
 import 'package:flutter_kanban/widgets/kanban_column.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => KanbanModel(),
+      child: MyApp(),
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {

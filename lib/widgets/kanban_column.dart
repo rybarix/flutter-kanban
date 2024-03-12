@@ -36,10 +36,8 @@ class KanbanColum extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
             child: Column(
               children: things
-                  .map((t) => KanbanItem(
-                        title: t.title,
-                        text: t.body,
-                        // onChange: t.onChange,
+                  .map((card) => KanbanItem(
+                        card: card,
                       ))
                   .toList(),
             ),
