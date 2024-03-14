@@ -71,7 +71,6 @@ class KanbanModel extends ChangeNotifier {
       WHERE boards.id = ? ORDER BY columns.id ASC, cards.id DESC;
       """, [ofBoardId]);
 
-    print(result.length);
     return transformToModelHierarchy(result).first;
   }
 
