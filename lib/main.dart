@@ -1,18 +1,41 @@
-import 'dart:js';
+// import 'dart:js';
 
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_kanban/models/kanban_model.dart';
 import 'package:flutter_kanban/widgets/kanban.dart';
-import 'package:flutter_kanban/widgets/kanban_column.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => KanbanModel(),
-      child: MyApp(),
-    )
+void main() async {
+  print("works");
+  WidgetsFlutterBinding.ensureInitialized();
+  final database = openDatabase(
+    join(await getDatabasesPath(), 'kanbanf2.db'),
+    onCreate: (db, version) async {
+      // Run the CREATE TABLE statement on the database.
+      print("works");
+
+      print("Seeding db");
+      await db.rawQuery(
+          'CREATE TABLE boards(id INTEGER PRIMARY KEY, title VARCHAR)');
+      await db.rawQuery(
+          'CREATE TABLE columns(id INTEGER PRIMARY KEY, title VARCHAR, board_id INTEGER, FOREIGN KEY(board_id) REFERENCES boards(id))');
+      await db.rawQuery(
+          'CREATE TABLE cards(id INTEGER PRIMARY KEY, title VARCHAR, body TEXT, column_id INTEGER, FOREIGN KEY(column_id) REFERENCES columns(id))');
+      await db.rawInsert('INSERT INTO boards VALUES (1, "main_board")');
+      await db.rawInsert(
+          'INSERT INTO columns VALUES (1, "Todo", 1), (2, "In progress", 1), (3, "Done", 1)');
+      await db.rawInsert(
+          'INSERT INTO cards VALUES (1, "First task TODO", "Some description here and there...", 1), (2, "Second task TODO", "Some description here and there...", 1)');
+    },
+    version: 1,
   );
+
+  runApp(ChangeNotifierProvider(
+    create: (context) => KanbanModel(database),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +45,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Kanban board',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -39,10 +62,10 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade800),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Kanban board'),
     );
   }
 }
@@ -67,6 +90,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  int _selectedBoard = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -92,8 +116,10 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Kanban(),
+      body: Container(
+        child: SingleChildScrollView(
+          child: Kanban(),
+        ),
       ),
     );
   }

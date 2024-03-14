@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_kanban/kanban_card.dart';
+import 'package:flutter_kanban/models/kanban_card.dart';
 import 'package:flutter_kanban/models/kanban_model.dart';
 import 'package:provider/provider.dart';
 
@@ -8,12 +10,8 @@ enum CardMenu { delete, edit }
 class KanbanItem extends StatefulWidget {
   final KanbanCard card;
   final bool editable;
-  // final void Function(String)? onChange;
 
-  const KanbanItem(
-      {super.key,
-      required this.card,
-      this.editable = false});
+  const KanbanItem({super.key, required this.card, this.editable = false});
 
   @override
   State<KanbanItem> createState() => _KanbanItemState();
@@ -46,6 +44,15 @@ class _KanbanItemState extends State<KanbanItem> {
     });
   }
 
+  void dblTap() {
+    var _timer = Timer(
+      Duration(milliseconds: 300),
+      () => setState(
+        () {},
+      ),
+    );
+  }
+
   void _startEditable() {
     setState(() {
       editable = true;
@@ -74,6 +81,7 @@ class _KanbanItemState extends State<KanbanItem> {
 
     Widget notEditable() {
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(_card.title, style: Theme.of(context).textTheme.titleMedium),
           Text(_card.body),
@@ -94,35 +102,48 @@ class _KanbanItemState extends State<KanbanItem> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                textBaseline: TextBaseline.alphabetic,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
                 children: [
+                  Text(
+                    '#${widget.card.id}',
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
                   Spacer(),
                   IconButton(
-                    icon: Icon(editable ? Icons.done :  Icons.edit),
+                    icon: Icon(editable ? Icons.done : Icons.edit,
+                        color: Colors.grey.shade400),
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
-                    // hoverColor: Colors.transparent,
                     padding: EdgeInsets.all(0.0),
                     visualDensity: VisualDensity.compact,
                     iconSize: 14,
+                    // hover: Colors.grey.shade600,
                     onPressed: () {
                       editable ? _endEditable() : _startEditable();
                     },
                   ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    // hoverColor: Colors.transparent,
-                    padding: EdgeInsets.all(0.0),
-                    visualDensity: VisualDensity.compact,
-                    iconSize: 14,
-                    onPressed: () {
-                      Provider.of<KanbanModel>(context, listen:false).remove(_card);
+                  GestureDetector(
+                    onDoubleTap: () {
+                      Provider.of<KanbanModel>(context, listen: false)
+                          .remove(_card);
                     },
+                    child: IconButton(
+                      icon: Icon(Icons.delete, color: Colors.grey.shade400),
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      // hoverColor: Colors.transparent,
+                      padding: EdgeInsets.all(0.0),
+                      visualDensity: VisualDensity.compact,
+                      iconSize: 14,
+                      onPressed: () {},
+                    ),
                   ),
                 ],
               ),
-              Text("state:" + editable.toString()),
               editable ? isEditable() : notEditable(),
             ],
           ),
