@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_kanban/models/kanban_card.dart';
 import 'package:flutter_kanban/models/kanban_model.dart';
