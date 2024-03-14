@@ -11,6 +11,7 @@ class Kanban extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.only(top: 26),
       child: Consumer<KanbanModel>(
         builder: (context, model, child) {
           return FutureBuilder(
@@ -26,9 +27,7 @@ class Kanban extends StatelessWidget {
                       Expanded(
                           key: ObjectKey(c),
                           child: KanbanColumnWidget(
-                            // title: c.title,
                             column: c,
-                            // things: c.cards,
                             onNew: () {
                               Provider.of<KanbanModel>(context, listen: false)
                                   .add(KanbanCard(0, 'Untitled', '', c.id));

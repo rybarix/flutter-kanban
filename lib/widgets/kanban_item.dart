@@ -44,15 +44,6 @@ class _KanbanItemState extends State<KanbanItem> {
     });
   }
 
-  void dblTap() {
-    var _timer = Timer(
-      Duration(milliseconds: 300),
-      () => setState(
-        () {},
-      ),
-    );
-  }
-
   void _startEditable() {
     setState(() {
       editable = true;
@@ -73,8 +64,24 @@ class _KanbanItemState extends State<KanbanItem> {
     Widget isEditable() {
       return Column(
         children: [
-          TextField(controller: tecTitle),
-          TextField(controller: tecBody),
+          TextField(
+            controller: tecTitle,
+            decoration: const InputDecoration(
+              hintText: 'Title',
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero
+            ),
+          ),
+          TextField(
+            controller: tecBody,
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            decoration: const InputDecoration(
+              hintText: 'Description',
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero
+            ),
+          ),
         ],
       );
     }
@@ -97,7 +104,7 @@ class _KanbanItemState extends State<KanbanItem> {
           borderRadius: BorderRadius.circular(6.0),
         ),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(10.0, 4.0, 10.0, 10.0),
+          padding: const EdgeInsets.fromLTRB(10.0, 4.0, 10.0, 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -112,13 +119,13 @@ class _KanbanItemState extends State<KanbanItem> {
                       color: Colors.grey.shade400,
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   IconButton(
                     icon: Icon(editable ? Icons.done : Icons.edit,
                         color: Colors.grey.shade400),
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
-                    padding: EdgeInsets.all(0.0),
+                    padding: const EdgeInsets.all(0.0),
                     visualDensity: VisualDensity.compact,
                     iconSize: 14,
                     // hover: Colors.grey.shade600,
@@ -131,15 +138,17 @@ class _KanbanItemState extends State<KanbanItem> {
                       Provider.of<KanbanModel>(context, listen: false)
                           .remove(_card);
                     },
-                    child: IconButton(
-                      icon: Icon(Icons.delete, color: Colors.grey.shade400),
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      // hoverColor: Colors.transparent,
-                      padding: EdgeInsets.all(0.0),
-                      visualDensity: VisualDensity.compact,
-                      iconSize: 14,
-                      onPressed: () {},
+                    child: Tooltip(
+                      message: 'Delete me with double tap',
+                      child: IconButton(
+                        icon: Icon(Icons.delete, color: Colors.grey.shade400),
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        padding: const EdgeInsets.all(0.0),
+                        visualDensity: VisualDensity.compact,
+                        iconSize: 14,
+                        onPressed: () {},
+                      ),
                     ),
                   ),
                 ],
