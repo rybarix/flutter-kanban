@@ -9,7 +9,7 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final database = openDatabase(
-    join(await getDatabasesPath(), 'kanbanf2.db'),
+    join(await getDatabasesPath(), 'kanban.db'),
     onCreate: (db, version) async {
       // Run the CREATE TABLE statement on the database.
       await db.rawQuery(
